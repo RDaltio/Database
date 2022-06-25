@@ -1,0 +1,139 @@
+-- Alexandre Leonardo Martinek - RA: 2273772
+-- Gabriela Maria Lieira - RA: 2268213
+-- João Claudio de Oliveira Silva - RA: 2266407
+-- Rafael Duarte Daltio - RA: 2266539
+-- Taynara Garcia Teixeira - RA: 2101084
+
+-- 2-) Inserir dados na tabela plant
+
+ALTER SEQUENCE plant_plantId_seq RESTART WITH 1;
+
+COPY plant(sepalLength, sepalWidth, petalLength, petalWidth, irisClass)
+from 'C:\BD2\iris.data'
+WITH
+	CSV HEADER
+	DELIMITER AS ',';
+
+-- 7-) Função de treino criada
+
+CREATE OR REPLACE FUNCTION sampleTraining(trainingPercentage NUMERIC(2,1) DEFAULT 0.7)
+	RETURNS TEXT
+	AS $$
+	
+	DECLARE
+	
+	BEGIN
+		DELETE FROM training;
+		ALTER SEQUENCE training_trainingId_seq RESTART WITH 1;
+		
+		INSERT INTO training(plantId)
+			SELECT setosa.plantId
+			FROM setosa
+			ORDER BY RANDOM()
+			LIMIT(SELECT COUNT(*) FROM setosa)*trainingPercentage;
+			
+		INSERT INTO training(plantId)
+			SELECT versicolor.plantId
+			FROM versicolor
+			ORDER BY RANDOM()
+			LIMIT(SELECT COUNT(*) FROM versicolor)*trainingPercentage;
+			
+		INSERT INTO training(plantId)
+			SELECT virginica.plantId
+			FROM virginica
+			ORDER BY RANDOM()
+			LIMIT(SELECT COUNT(*) FROM virginica)*trainingPercentage;
+			
+		DELETE FROM sample;
+		ALTER SEQUENCE sample_sampleId_seq RESTART WITH 1;
+		
+		INSERT INTO sample(plantId)
+			SELECT plant.plantId
+			FROM plant
+			WHERE plant.plantId NOT IN (SELECT training.plantId FROM training);
+			
+		RETURN 'Porcentagem de treino gerada ' || trainingPercentage*100 || '%. Porcentagem de amostra gerada ' || (1 - trainingPercentage)*100 || '%.';
+	END;
+$$ LANGUAGE plpgsql;
+
+-- 8-) Criação da função k-nearest neighbors
+
+CREATE OR REPLACE FUNCTION knn(k INTEGER DEFAULT 1)
+	RETURNS TABLE(	"Sample ID" INTEGER,
+					"Plant ID" INTEGER,
+					"Labeled as" VARCHAR(20),
+					"Original label" VARCHAR(20))
+		
+	AS $$
+	
+	DECLARE 
+			n_setosa INTEGER :=0;
+			n_versicolor INTEGER :=0;
+			n_virginica INTEGER :=0;
+			plantClass VARCHAR(20);
+			plantTuple plant%ROWTYPE;
+			sampleTuple sample%ROWTYPE;
+			
+	BEGIN
+			DELETE FROM distance;
+			
+			FOR sampleTuple IN SELECT * FROM sample LOOP
+				SELECT *
+				INTO plantTuple
+				FROM plant
+				WHERE plant.plantId = sampleTuple.plantId;
+				
+			INSERT INTO distance(trainingId, sampleId, euclideanDistance)
+				SELECT training.trainingId, sampleTuple.sampleId,
+					sqrt(	(plant.sepalLength - plantTuple.sepalLength)^2
+							+(plant.sepalWidth - plantTuple.sepalWidth)^2
+							+(plant.petalLength - plantTuple.petalLength)^2
+							+(plant.petalWidth - plantTuple.petalWidth)^2
+					)
+				FROM plant, training
+				WHERE plant.plantId = training.plantId;
+				
+			n_setosa :=0;
+			n_versicolor :=0;
+			n_virginica :=0;
+				
+			FOR plantClass IN
+				SELECT plant.irisClass
+				FROM plant, training, distance
+				WHERE distance.sampleId = sampleTuple.sampleId
+					AND distance.trainingId = training.trainingId
+					AND training.plantId = plant.plantId
+					ORDER BY distance.euclideanDistance
+					LIMIT k
+			
+			LOOP
+				IF plantClass = 'Iris-setosa' THEN
+					n_setosa := n_setosa + 1;
+				ELSEIF plantClass = 'Iris-versicolor' THEN 
+					n_versicolor := n_versicolor + 1;
+				ELSEIF plantClass = 'Iris-virginica' THEN 
+					n_virginica := n_virginica + 1;
+				END IF;
+			END LOOP;
+			
+			IF n_setosa > n_versicolor AND n_setosa > n_virginica THEN
+				plantClass := 'Iris-setosa';
+			ELSEIF n_versicolor > n_setosa AND n_versicolor > n_virginica THEN
+				plantClass := 'Iris-versicolor';
+			ELSEIF n_virginica > n_setosa AND n_virginica > n_versicolor THEN
+				plantClass := 'Iris-virginica';
+			ELSE 
+				plantClass := 'Undefined';
+			END IF;
+			
+			UPDATE sample
+			SET sampleLabel = plantClass
+			WHERE sample.sampleId = sampleTuple.sampleId;
+		END LOOP;
+		
+		RETURN QUERY
+		SELECT sample.*, plant.irisClass
+		FROM plant, sample
+		WHERE plant.plantId = sample.plantId; 
+	END;
+$$ LANGUAGE plpgsql;

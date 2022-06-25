@@ -1,0 +1,67 @@
+-- Alexandre Leonardo Martinek - RA: 2273772
+-- Gabriela Maria Lieira - RA: 2268213
+-- João Claudio de Oliveira Silva - RA: 2266407
+-- Rafael Duarte Daltio - RA: 2266539
+-- Taynara Garcia Teixeira - RA: 2101084
+
+-- 1-) Criação da tabela plant
+
+CREATE TABLE IF NOT EXISTS plant(
+	plantId SERIAL,
+	sepalLength NUMERIC(2,1),
+	sepalWidth NUMERIC(2,1),
+	petalLength NUMERIC(2,1),
+	petalWidth NUMERIC(2,1),
+	irisClass VARCHAR(20),
+	CONSTRAINT pkPlantId
+		PRIMARY KEY (plantId)
+);
+
+-- 3-) Criação da tabela training
+
+CREATE TABLE IF NOT EXISTS training(
+	trainingId SERIAL,
+	plantId INTEGER,
+	CONSTRAINT pkTrainingId
+		PRIMARY KEY(trainingId),
+	CONSTRAINT fkPlantId
+		FOREIGN KEY(plantId)
+			REFERENCES plant(plantId)
+				ON DELETE CASCADE
+				ON UPDATE CASCADE
+);
+
+-- 4-) Criação da tabela sample
+
+CREATE TABLE IF NOT EXISTS sample(
+	sampleId SERIAL,
+	plantId INTEGER,
+	sampleLabel	VARCHAR(20),
+	CONSTRAINT pkSampleId
+		PRIMARY KEY(sampleId),
+	CONSTRAINT fkPlantId
+		FOREIGN KEY(plantId)
+			REFERENCES plant(plantId)
+			ON DELETE CASCADE
+			ON UPDATE CASCADE
+);
+
+-- 5-) Criação da tabela distance
+
+CREATE TABLE IF NOT EXISTS distance(
+	trainingId INTEGER,
+	sampleId INTEGER,
+	euclideanDistance NUMERIC(2,1),
+	CONSTRAINT pkDistance
+		PRIMARY KEY(trainingId,sampleId),
+	CONSTRAINT fkTraningId
+		FOREIGN KEY(trainingId)
+			REFERENCES training(trainingId)
+			ON DELETE CASCADE
+			ON UPDATE CASCADE,
+	CONSTRAINT fkSampleId
+		FOREIGN KEY(sampleId)
+			REFERENCES sample(sampleId)
+			ON DELETE CASCADE
+			ON UPDATE CASCADE
+);
