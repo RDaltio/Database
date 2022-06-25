@@ -1,4 +1,5 @@
-Extraia a pasta .zip e obterá uma pasta chamada BD2, dentro dela existe este arquivo README, um arquivo "iris.data", um arquivo PDF do relatório, slides para visualização do código e uma pasta com nome TRABALHO2 que contém os arquivos txt a serem utilizados.
+Neste arquivo ensino como rodar essa aplicação, ela foi dividida conforme o pedido do professor de Banco de Dados 2, neste repositório contém um arquivo "iris.data" e os arquivos txt a serem utilizados.
+Crie uma pasta "BD2" e cole todos os arquivos txt dentro dela.
 Cole a pasta "BD2" no disco C, ficando com o seguinte endereço a ser usado posteriormente: 
 
 'C:\BD2\iris.data'
@@ -9,7 +10,7 @@ Para o código do projeto:
 
 2-) Após sua criação será necessário utilizar o database cedido pelo professor para inserir os dados na tabela.
 Para isso utiliza-se o código 2-) do arquivo txt Functions.
-É preciso que o arquivo com os dados esteja na pasta com endereço utilizado na linha 10 deste arquivo txt.
+É preciso que o arquivo com os dados esteja na pasta com endereço utilizado na linha 5 deste arquivo txt.
 Pode-se escolher a pasta do arquivo dos dados, porém seu endereço deve ser colado no valor da linha 12 do arquivo txt Functions.
 
 3-) Tendo os dados inseridos cria-se a tabela "training" com o código 3-) do arquivo txt Tables.
