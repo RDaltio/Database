@@ -1,9 +1,3 @@
--- Alexandre Leonardo Martinek - RA: 2273772
--- Gabriela Maria Lieira - RA: 2268213
--- João Claudio de Oliveira Silva - RA: 2266407
--- Rafael Duarte Daltio - RA: 2266539
--- Taynara Garcia Teixeira - RA: 2101084
-
 Extraia a pasta .zip e obterá uma pasta chamada BD2, dentro dela existe este arquivo README, um arquivo "iris.data", um arquivo PDF do relatório, slides para visualização do código e uma pasta com nome TRABALHO2 que contém os arquivos txt a serem utilizados.
 Cole a pasta "BD2" no disco C, ficando com o seguinte endereço a ser usado posteriormente: 
 
