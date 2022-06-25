@@ -1,9 +1,3 @@
--- Alexandre Leonardo Martinek - RA: 2273772
--- Gabriela Maria Lieira - RA: 2268213
--- João Claudio de Oliveira Silva - RA: 2266407
--- Rafael Duarte Daltio - RA: 2266539
--- Taynara Garcia Teixeira - RA: 2101084
-
 -- 6-) Criação das visões das classes de planta
 
 CREATE OR REPLACE VIEW setosa AS
