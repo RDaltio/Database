@@ -11,7 +11,7 @@ Para o código do projeto:
 2-) Após sua criação será necessário utilizar o database cedido pelo professor para inserir os dados na tabela.
 Para isso utiliza-se o código 2-) do arquivo txt Functions.
 É preciso que o arquivo com os dados esteja na pasta com endereço utilizado na linha 5 deste arquivo txt.
-Pode-se escolher a pasta do arquivo dos dados, porém seu endereço deve ser colado no valor da linha 12 do arquivo txt Functions.
+Pode-se escolher a pasta do arquivo dos dados, porém seu endereço deve ser colado no valor da linha 6 do arquivo txt Functions.
 
 3-) Tendo os dados inseridos cria-se a tabela "training" com o código 3-) do arquivo txt Tables.
 
